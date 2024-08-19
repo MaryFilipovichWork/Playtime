@@ -4,20 +4,20 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
 class PlaytimeManager(
-    private val playtime: Playtime
+    private val playtimeTracker: PlaytimeTracker
 ) {
 
     fun initialize(lifecycleOwner: LifecycleOwner) {
         lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
             override fun onResume(owner: LifecycleOwner) {
-                playtime.startTracking()
+                playtimeTracker.startTracking()
             }
 
             override fun onPause(owner: LifecycleOwner) {
-                playtime.stopTracking()
+                playtimeTracker.stopTracking()
             }
         })
     }
 
-    fun getPlaytime() = playtime.playtime
+    fun getPlaytime() = playtimeTracker.playtime
 }

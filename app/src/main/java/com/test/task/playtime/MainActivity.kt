@@ -13,6 +13,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {  }
 
-        ExampleSdk.attachActivity(this)
+        ExampleSdk.attachActivity(this, applicationContext)
     }
 }

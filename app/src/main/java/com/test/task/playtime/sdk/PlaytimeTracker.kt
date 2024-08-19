@@ -8,35 +8,37 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-class Playtime(
-    // TODO: get object to save and receive playtime from storage
+class PlaytimeTracker(
+    private val dataSource: PlayTimeDataSource
 ) {
 
     private val _playtime = MutableStateFlow(0L)
     val playtime: StateFlow<Long>
         get() = _playtime
 
-    private var startTrackingTime: Long = 0L
     private var job: Job? = null
 
     fun startTracking() {
-        startTrackingTime = SystemClock.elapsedRealtime()
+        val startTrackingTime = SystemClock.elapsedRealtime()
         Log.d(TAG, "tracking started")
         job = CoroutineScope(Dispatchers.Default + Job()).launch {
+            val previousSessionsTime = dataSource.getPlaytime().first()
+            _playtime.update { previousSessionsTime }
             flow {
                 while (isActive) {
-                    emit(SystemClock.elapsedRealtime() - startTrackingTime)
+                    emit((SystemClock.elapsedRealtime() - startTrackingTime) / 1000)
                     delay(1000.milliseconds)
                 }
             }.collect { measuredTime ->
                 _playtime.update {
-                    measuredTime //TODO: then - savedTime + measuredTime
+                    previousSessionsTime + measuredTime
                 }
                 Log.d(TAG, "playtime = ${playtime.value}")
             }
@@ -46,12 +48,9 @@ class Playtime(
     fun stopTracking() {
         job?.cancel()
         Log.d(TAG, "tracking stopped")
-        val currentTime = SystemClock.elapsedRealtime()
-        val measuredTime = (currentTime - startTrackingTime) / 1000
-        _playtime.update {
-            _playtime.value + measuredTime //TODO: savedTime + measuredTime
+        CoroutineScope(Dispatchers.IO).launch {
+            dataSource.savePlaytime(_playtime.value)
         }
-        //TODO: save time
     }
 
     companion object {
