@@ -8,17 +8,17 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class Playtime(
     // TODO: get object to save and receive playtime from storage
 ) {
 
-    private val _playtime = MutableStateFlow<Long>(0L)
+    private val _playtime = MutableStateFlow(0L)
     val playtime: StateFlow<Long>
         get() = _playtime
 
@@ -29,14 +29,16 @@ class Playtime(
         startTrackingTime = SystemClock.elapsedRealtime()
         Log.d(TAG, "tracking started")
         job = CoroutineScope(Dispatchers.Default + Job()).launch {
-            while (isActive) {
-                delay(1000L)
-                val currentTime = SystemClock.elapsedRealtime()
-                val measuredTime = currentTime - startTrackingTime
-                    _playtime.update {
-                        measuredTime / 1000 //TODO: then - savedTime + measuredTime
-                    }
-                    Log.d(TAG, "playtime = ${playtime.value}")
+            flow {
+                while (isActive) {
+                    emit(SystemClock.elapsedRealtime() - startTrackingTime)
+                    delay(1000.milliseconds)
+                }
+            }.collect { measuredTime ->
+                _playtime.update {
+                    measuredTime //TODO: then - savedTime + measuredTime
+                }
+                Log.d(TAG, "playtime = ${playtime.value}")
             }
         }
     }

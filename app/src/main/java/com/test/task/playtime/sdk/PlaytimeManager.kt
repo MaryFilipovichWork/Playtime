@@ -2,7 +2,6 @@ package com.test.task.playtime.sdk
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import kotlinx.coroutines.flow.Flow
 
 class PlaytimeManager(
     private val playtime: Playtime
@@ -20,5 +19,5 @@ class PlaytimeManager(
         })
     }
 
-    fun getPlaytime(): Flow<Long> = playtime.playtime
+    fun getPlaytime() = playtime.playtime
 }
