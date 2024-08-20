@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.test.task.playtime.ui.theme.PlaytimeTheme
 
 class SecondActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

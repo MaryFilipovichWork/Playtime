@@ -69,4 +69,8 @@ dependencies {
 
     //Preferences DataStore
     implementation (libs.androidx.datastore.preferences)
+
+    //DI - Koin
+    implementation (libs.koin.core)
+    implementation (libs.koin.android)
 }

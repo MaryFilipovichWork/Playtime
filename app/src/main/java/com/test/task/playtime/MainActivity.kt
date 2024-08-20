@@ -41,6 +41,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        ExampleSdk.attachActivity(this, applicationContext)
+        ExampleSdk.attachActivity(this)
     }
 }
