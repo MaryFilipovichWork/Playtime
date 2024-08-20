@@ -54,6 +54,6 @@ class PlaytimeTracker(
     }
 
     companion object {
-        private const val TAG = "Playtime"
+        private const val TAG = "PlaytimeTracker"
     }
 }
